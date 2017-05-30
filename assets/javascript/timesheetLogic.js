@@ -22,7 +22,7 @@ var time;
 var diff;
 
 // Capture Button Click
-$("#submit").on("click", function(event) {
+$("#add").on("click", function(event) {
 	event.preventDefault();
 
   	train = $("#train-input").val().trim();
@@ -41,8 +41,6 @@ $("#submit").on("click", function(event) {
 		destination: destination,
 		startTime: startTime,
 		frequency: frequency,
-		// minsAway: minsAway,
-		// dateAdded: firebase.database.ServerValue.TIMESTAMP
 	});
 });
 
@@ -65,9 +63,14 @@ dataRef.ref().on("child_added", function(childSnapshot) {
 	var now = moment();
 	console.log(time + " " + now);
 	diff = now.diff(time, "minutes");
+	if (diff < 0) {
+		minsAway = Math.abs(diff);
+		nextArr = childSnapshot.val().startTime;
+	} else {
+		minsAway = frequency-(diff %frequency);
+		nextArr = now.add(minsAway, "minutes").format("HH:mm");
+	}
 	console.log("diff = " + diff);
-	minsAway = frequency-(diff %frequency);
-	nextArr = now.add(minsAway, "minutes").format("HH:mm");
 	
 
 	// add each train record to the table
